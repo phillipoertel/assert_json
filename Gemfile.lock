@@ -1,14 +1,18 @@
 PATH
   remote: .
   specs:
-    assert_json (0.0.3)
+    assert_json (0.1.1)
       activesupport
 
 GEM
   remote: http://rubygems.org/
   specs:
-    activesupport (3.0.7)
+    activesupport (3.2.7)
+      i18n (~> 0.6)
+      multi_json (~> 1.0)
+    i18n (0.6.0)
     minitest (2.1.0)
+    multi_json (1.3.6)
 
 PLATFORMS
   ruby

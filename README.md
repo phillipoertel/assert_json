@@ -6,37 +6,47 @@ Test your JSON strings.
 
 ```sh
 cd path/to/your/rails-project
-./script/plugin install git://github.com/xing/assert_json.git
+./script/plugin install git://github.com/phillipoertel/assert_json.git
 ```
-
-Or if you prefer [bundler](http://getbundler.com)
-
-```sh
-# in your Gemfile
-gem 'assert_json'
-```
-
 
 ## Usage ##
 
 ```ruby
 class MyActionTest < ActionController::TestCase
-  include AssertJson
+  include IncludeJson
 
   def test_my_action
     get :my_action, :format => 'json'
     # => @response.body= '{"key":[{"inner_key1":"value1"},{"inner_key2":"value2"}]}'
     
-    assert_json(@response.body) do
-      has 'key' do
-        has 'inner_key1', 'value1'
-        has 'inner_key2', /lue2/
-      end
-      has_not 'key_not_included'
-    end
+    # include_json requires the expected structure in the actual json.
+    # it allows other stuff in the actual json, however. that's where equal_json will kick in (to be written).
+    include_json({
+      key: {
+        inner_key1: 'value1',
+        inner_key2: /lue2/
+      }
+    }, @response.body)
+    
   end
 
 end
+```
+
+## Future ##
+
+rspec compatibility: 
+
+```ruby
+user_to_json.should include_json({
+  name: 'Peter',
+  age: /\d+/,
+  _links: {
+    next: {
+      href: /http.+/
+    }
+  }
+})
 ```
 
 ## Changelog ##
@@ -47,17 +57,13 @@ Look at the [CHANGELOG](https://github.com/xing/assert_json/blob/master/CHANGELO
 
 [Thorsten Böttger](http://github.com/alto),
 [Ralph von der Heyden](http://github.com/ralph)
-
-Please find out more about our work in our 
-[Xing Dev Blog](http://devblog.xing.com/).
-
-PING
+[Phillip Oertel](http://github.com/phillipoertel)
 
 ## License ##
 
 The MIT License
  
-Copyright (c) 2009-2011 [XING AG](http://www.xing.com/)
+Copyright (c) 2009-2012
  
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

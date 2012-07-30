@@ -1,111 +1,118 @@
 require File.expand_path(File.dirname(__FILE__) + '/test_helper')
 
 class AssertJsonNewDslTest < Test::Unit::TestCase
-  include AssertJson
+  include IncludeJson
 
-  def test_string
-    assert_json '["key"]' do
-      has 'key'
-    end
-  end
-  def test_string_crosscheck
-    assert_raises(MiniTest::Assertion) do
-      assert_json '["key"]' do
-        has 'wrong_key'
-      end
-    end
-  end
-  def test_regular_expression_for_strings
-    assert_json '["string"]' do
-      has /tri/
-    end
-  end
-  def test_regular_expression_for_hash_values
-    assert_json '{"key":"value"}' do
-      has 'key', /alu/
-    end
+  def test_single_hash
+    actual = '{"key": "value"}'
+    include_json({
+      key: "value"
+    }, actual)
   end
   
-  def test_single_hash
-    assert_json '{"key":"value"}' do
-      has 'key', 'value'
-    end
+  def test_regular_expression_for_hash_values
+    actual = '{"key": "value"}'
+    include_json({
+      key: /alu/
+    }, actual)
   end
-  def test_single_hash_with_outer_variable
-    @values = {'value' => 'value'}
-    assert_json '{"key":"value"}' do
-      has 'key', @values['value']
-    end
-  end
+
   def test_single_hash_crosscheck_for_key
     assert_raises(MiniTest::Assertion) do
-      assert_json '{"key":"value"}' do
-        has 'wrong_key', 'value'
-      end
-    end
-  end
-  def test_single_hash_crosscheck_for_value
-    assert_raises(MiniTest::Assertion) do
-      assert_json '{"key":"value"}' do
-        has 'key', 'wrong_value'
-      end
+      actual = '{"wrong_key": "value"}'
+      include_json({
+        key: "value"
+      }, actual)
     end
   end
   
-  def test_has_not
-    assert_json '{"key":"value"}' do
-      has 'key', 'value'
-      has_not 'key_not_included'
-    end
-  end
-  def test_has_not_crosscheck
+  def test_single_hash_crosscheck_for_value
     assert_raises(MiniTest::Assertion) do
-      assert_json '{"key":"value"}' do
-        has_not 'key'
-      end
+      actual = '{"key": "wrong_value"}'
+      include_json({
+        key: "value"
+      }, actual)
     end
   end
   
   def test_array
-    assert_json '["value1","value2","value3"]' do
-      has 'value1'
-      has 'value2'
-      has 'value3'
+    actual = '["value1", "value2", "value3"]'
+    include_json(%w(value1 value2 value3), actual)
+  end
+  
+  def test_array_crosscheck_order
+    assert_raises(MiniTest::Assertion) do
+      actual = '["value1", "value2", "value3"]'
+      include_json(%w(value2), actual)
     end
   end
+  
+  def test_array_crosscheck_for_first_item
+    assert_raises(MiniTest::Assertion) do
+      actual = '["value1", "value2", "value3"]'
+      include_json(%w(wrong_value1), actual)
+    end
+  end
+  
+  def test_array_crosscheck_for_second_item
+    assert_raises(MiniTest::Assertion) do
+      actual = '["value1", "value2", "value3"]'
+      include_json(%w(value1 wrong_value2), actual)
+    end
+  end
+  
+  def test_hash_with_value_array
+    actual = '{"key":["value1","value2"]}'
+    include_json({
+      key: %w(value1 value2)
+    }, actual)
+  end
+  
+  # TODO
+  #def test_nested_arrays
+  #  assert_json '[[["deep","another_depp"],["second_deep"]]]' do
+  #    has [["deep","another_depp"],["second_deep"]]
+  #  end
+  #end
+  #def test_nested_arrays
+  #  actual = '[[["deep","another_depp"],["second_deep"]]]'
+  #  include_json([[["deep","another_depp"],["second_deep"]]], actual)
+  #end
+  
+  def test_has_not
+    actual = '{"key": "value"}'
+    not_include_json({
+      key_not_included: "value"
+    }, actual)
+  end
+  
+  def test_has_not_crosscheck
+    assert_raises(MiniTest::Assertion) do
+      actual = '{"key": "value"}'
+      not_include_json({
+        key: "value"
+      }, actual)
+    end
+  end
+  
+=begin
+
+  #
+  # WIP
+  #
+  
   def test_has_not_array
     assert_json '["value1","value2"]' do
       has 'value1'
       has 'value2'
       has_not 'value3'
     end
-  end
-  def test_array_crosscheck_order
-    assert_raises(MiniTest::Assertion) do
-      assert_json '["value1","value2","value3"]' do
-        has 'value2'
-      end
-    end
-  end
-  def test_array_crosscheck_for_first_item
-    assert_raises(MiniTest::Assertion) do
-      assert_json '["value1","value2","value3"]' do
-        has 'wrong_value1'
-      end
-    end
-  end
-  def test_array_crosscheck_for_second_item
-    assert_raises(MiniTest::Assertion) do
-      assert_json '["value1","value2","value3"]' do
-        has 'value1'
-        has 'wrong_value2'
-      end
-    end
-  end
-  
-  def test_nested_arrays
-    assert_json '[[["deep","another_depp"],["second_deep"]]]' do
-      has [["deep","another_depp"],["second_deep"]]
+  end  
+
+  def test_single_hash_with_outer_variable
+    @values = {'value' => 'value'}
+    assert_json '{"key":"value"}' do
+      has 'key', @values['value']
     end
   end
   def test_nested_arrays_crosscheck
@@ -121,11 +128,6 @@ class AssertJsonNewDslTest < Test::Unit::TestCase
     end
   end
   
-  def test_hash_with_value_array
-    assert_json '{"key":["value1","value2"]}' do
-      has 'key', ['value1', 'value2']
-    end
-  end
   def test_hash_with_value_array_crosscheck_wrong_key
     assert_raises(MiniTest::Assertion) do
       assert_json '{"key":["value1","value2"]}' do
@@ -270,4 +272,5 @@ class AssertJsonNewDslTest < Test::Unit::TestCase
       end
     end
   end
+=end
 end

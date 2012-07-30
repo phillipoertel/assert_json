@@ -2,6 +2,8 @@
 
 ## 0.1.2 (Unreleased)
 
+  * added #include_json matcher which allows giving a Ruby structure to compare to.
+  
 ## 0.1.1
 
  * bugfix for a block problem

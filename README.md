@@ -56,7 +56,7 @@ Look at the [CHANGELOG](https://github.com/xing/assert_json/blob/master/CHANGELO
 ## Authors ##
 
 [Thorsten Böttger](http://github.com/alto),
-[Ralph von der Heyden](http://github.com/ralph)
+[Ralph von der Heyden](http://github.com/ralph),
 [Phillip Oertel](http://github.com/phillipoertel)
 
 ## License ##

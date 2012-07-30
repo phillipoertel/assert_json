@@ -51,6 +51,7 @@ Look at the [CHANGELOG](https://github.com/xing/assert_json/blob/master/CHANGELO
 Please find out more about our work in our 
 [Xing Dev Blog](http://devblog.xing.com/).
 
+PING
 
 ## License ##
 
